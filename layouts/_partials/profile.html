@@ -10,13 +10,19 @@
 >
   {{ $lazy := site.Params.enableImageLazyLoading | default true }}
   {{ $altText := (site.Language.Params.Author.name | default "Author") }}
-  {{ with site.Language.Params.Author.image }}
-    {{ $authorImage := resources.Get . }}
-    {{ if $authorImage }}
-      {{ $imgClass := "mb-2 h-auto w-36 rounded-full" }}
-      {{ $webp := $.Page.Site.Params.enableImageWebp | default true }}
-      {{ partial "picture.html" (dict "img" $authorImage "alt" $altText "class" $imgClass "lazy" $lazy "webp" $webp) }}
-    {{ end }}
+  {{ $imagePath := site.Language.Params.Author.image | default "img/me.png" }}
+  {{ $authorImage := resources.Get $imagePath }}
+  {{ if $authorImage }}
+    {{ $imgClass := "mb-2 h-36 w-36 rounded-full object-cover object-center" }}
+    {{ $webp := $.Page.Site.Params.enableImageWebp | default true }}
+    {{ partial "picture.html" (dict "img" $authorImage "alt" $altText "class" $imgClass "lazy" $lazy "webp" $webp) }}
+  {{ else }}
+    <img
+      src="{{ $imagePath | relURL }}"
+      alt="{{ $altText }}"
+      class="mb-2 h-36 w-36 rounded-full object-cover object-center"
+      {{ if $lazy }}loading="lazy" decoding="async"{{ end }}
+    />
   {{ end }}
   <h1 class="text-4xl font-extrabold">
     {{ site.Language.Params.Author.name | default site.Title }}
